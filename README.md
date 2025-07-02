@@ -13,12 +13,12 @@ Prototype implementation of a 3‑D Tic‑Tac‑Toe game. The center cube acts a
 2. Start the development server:
 
    ```bash
-   npm start
+   npm run dev
    ```
 
-   This serves the `src` directory at `http://localhost:8080/`.
+   This serves the app via Vite at `http://localhost:5173/` by default.
 
-3. Open `http://localhost:8080` in your browser.
+3. Open `http://localhost:5173` in your browser.
 
 ## Gameplay
 
