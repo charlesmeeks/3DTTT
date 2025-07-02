@@ -7,9 +7,21 @@
     <style>
         body { margin: 0; overflow: hidden; }
         canvas { display: block; }
+        #hud {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            color: #fff;
+            font-family: sans-serif;
+            z-index: 10;
+        }
     </style>
 </head>
 <body>
+    <div id="hud">
+        Turn: <span id="current-player">Red</span><br/>
+        <span id="coords"></span>
+    </div>
     <script type="module" src="./app.js"></script>
 </body>
 </html>
