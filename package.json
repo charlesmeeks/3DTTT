@@ -4,22 +4,21 @@
   "description": "3DTTT",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
     "start": "http-server ./src -c-1"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs",
+  "type": "module",
   "dependencies": {
-<<<<<<< HEAD
-    "pip": "^0.0.1"
-=======
     "three": "^0.178.0"
   },
   "devDependencies": {
-    "http-server": "^14.1.1"
->>>>>>> 3f288cb1d775e42f7fdd668cdd2e3f2196955e13
+    "http-server": "^14.1.1",
+    "jest": "^30.0.3"
+  },
+  "jest": {
+    "testEnvironment": "node"
   }
 }
-
