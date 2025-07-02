@@ -1,5 +1,5 @@
-import * as THREE from 'https://unpkg.com/three@0.155.0/build/three.module.js';
-import { OrbitControls } from 'https://unpkg.com/three@0.155.0/examples/jsm/controls/OrbitControls.js';
+import * as THREE from '../node_modules/three/build/three.module.js';
+import { OrbitControls } from '../node_modules/three/examples/jsm/controls/OrbitControls.js';
 import { GameState, Player } from './game.js';
 
 let scene, camera, renderer, controls;
@@ -7,6 +7,9 @@ let cells = [];
 const gs = new GameState();
 const raycaster = new THREE.Raycaster();
 const pointer = new THREE.Vector2();
+const hudTurn = document.getElementById('current-player');
+const hudCoords = document.getElementById('coords');
+let hovered = null;
 
 function init() {
     scene = new THREE.Scene();
@@ -16,12 +19,16 @@ function init() {
 
     renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setClearColor(0x202020);
     document.body.appendChild(renderer.domElement);
     controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
 
     const ambient = new THREE.AmbientLight(0xffffff, 0.8);
     scene.add(ambient);
+    const dirLight = new THREE.DirectionalLight(0xffffff, 0.6);
+    dirLight.position.set(5, 5, 5);
+    scene.add(dirLight);
 
     // Build 3x3x3 grid lines (hollow cube)
     const gridMaterial = new THREE.LineBasicMaterial({ color: 0x808080 });
@@ -67,6 +74,7 @@ function init() {
     }
 
     window.addEventListener('pointerdown', onPointerDown);
+    window.addEventListener('pointermove', onPointerMove);
 
     window.addEventListener('resize', onWindowResize);
     animate();
@@ -88,11 +96,38 @@ function onPointerDown(event) {
         const {x,y,z} = cell.userData.coord;
         if (gs.makeMove(x,y,z)) {
             cell.material = new THREE.MeshLambertMaterial({ color: gs.get(x,y,z) === Player.RED ? 0xff0000 : 0x0000ff, transparent:true, opacity:0.8 });
+            cell.userData.filled = true;
+            const next = gs.current === Player.RED ? 'Red' : 'Blue';
+            hudTurn.textContent = next;
             const winner = gs.checkWin();
             if (winner) {
                 setTimeout(()=>alert(`${winner === Player.RED ? 'Red' : 'Blue'} wins!`), 10);
+                hudTurn.textContent = `${winner === Player.RED ? 'Red' : 'Blue'} wins!`;
             }
         }
+    }
+}
+
+function onPointerMove(event) {
+    pointer.x = (event.clientX / window.innerWidth) * 2 - 1;
+    pointer.y = - (event.clientY / window.innerHeight) * 2 + 1;
+    raycaster.setFromCamera(pointer, camera);
+    const intersects = raycaster.intersectObjects(cells);
+    if (intersects.length > 0) {
+        const cell = intersects[0].object;
+        if (hovered && hovered !== cell) {
+            hovered.material.opacity = hovered.userData.filled ? 0.8 : 0.25;
+        }
+        hovered = cell;
+        cell.material.opacity = 0.5;
+        const {x,y,z} = cell.userData.coord;
+        hudCoords.textContent = `Cell: ${x},${y},${z}`;
+    } else {
+        if (hovered) {
+            hovered.material.opacity = hovered.userData.filled ? 0.8 : 0.25;
+            hovered = null;
+        }
+        hudCoords.textContent = '';
     }
 }
 
